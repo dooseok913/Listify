@@ -84,21 +84,21 @@ def login_user(email, password):
     """로그인 처리"""
     # 입력값 검증
     if not email or not password:
-        return False, "이메일과 비밀번호를 입력해주세요.", None
+        return False, "이메일과 비밀번호를 입력해주세요.", None, None
 
     # 사용자 조회
     user = auth_model.find_user_by_email(email)
     if not user:
-        return False, "존재하지 않는 사용자입니다.", None
+        return False, "존재하지 않는 사용자입니다.", None, None
 
     # 비밀번호 검증
     if not verify_password(password, user['password']):
-        return False, "비밀번호가 일치하지 않습니다.", None
+        return False, "비밀번호가 일치하지 않습니다.", None, None
 
     # JWT 토큰 생성
     token = generate_jwt_token(user['user_no'], user['role_no'])
 
-    return True, "로그인 성공", token
+    return True, "로그인 성공", token, user  # user 추가
 
 def generate_jwt_token(user_no, role_no):
     """JWT 토큰 생성"""

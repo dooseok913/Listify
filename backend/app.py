@@ -16,8 +16,6 @@ app = Flask(__name__)
 
 # Blueprint 등록
 app.register_blueprint(auth_bp)
-
-# 공지사항 라우트 등록
 app.register_blueprint(notice_bp)
 app.register_blueprint(user_bp)
 
@@ -91,4 +89,4 @@ if __name__ == '__main__':
     print("Test: http://localhost:5000/test")
     print("Health: http://localhost:5000/health")
     
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5001, debug=True)

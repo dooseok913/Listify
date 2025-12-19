@@ -26,7 +26,7 @@ def login():
     if not data or "email" not in data or "password" not in data:
         return jsonify({"success": False, "message": "이메일과 비밀번호를 입력해주세요."}), 400
 
-    success, message, token = auth_service.login_user(data["email"], data["password"])
+    success, message, token, user = auth_service.login_user(data["email"], data["password"])
 
     if success:
         return jsonify({
@@ -34,7 +34,9 @@ def login():
             "message": message,
             "data": {
                 "access_token": token,
-                "token_type": "Bearer"
+                "token_type": "Bearer",
+                "user_no": user["user_no"],
+                "nickname": user["nickname"]
             }
         }), 200
     else:

@@ -1,4 +1,6 @@
 import pymysql
+import os
+from dotenv import load_dotenv
 
 def connect_to_mysql(host, port, user, password, database):
     try:
@@ -17,11 +19,11 @@ def connect_to_mysql(host, port, user, password, database):
         return None
 
 if __name__ == '__main__':
-    DB_HOST = "localhost" 
-    DB_PORT = 3306
-    DB_USER = "root" 
-    DB_PASSWORD = ""
-    DB_DATABASE = "listify"
+    DB_HOST = os.getenv('DB_HOST')
+    DB_PORT = int(os.getenv('DB_PORT'))
+    DB_USER = os.getenv('DB_USER')
+    DB_PASSWORD = os.getenv('DB_PASSWORD')
+    DB_DATABASE = os.getenv('DB_DATABASE')
 
     conn = connect_to_mysql(DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_DATABASE)
 
