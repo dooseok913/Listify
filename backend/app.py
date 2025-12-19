@@ -1,16 +1,24 @@
 from flask import Flask
+from flask_cors import CORS
 from dotenv import load_dotenv
 import os
 from spotipy.oauth2 import SpotifyClientCredentials
 import spotipy
+from flask_cors import CORS
+
+from routes.auth import auth_bp
 from routes.notice import notice_bp
 from routes.user import user_bp
+
 
 load_dotenv()
 
 app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
-# 공지사항 라우트 등록
+
+# Blueprint 등록
+app.register_blueprint(auth_bp)
 app.register_blueprint(notice_bp)
 app.register_blueprint(user_bp)
 
@@ -29,7 +37,12 @@ def index():
         'version': 'v1.0.0',
         'endpoints': {
             'test': '/test',
-            'health': '/health'
+            'health': '/health',
+            'auth': {
+                'register': '/auth/register',
+                'login': '/auth/login',
+                'verify': '/auth/verify'
+            }
         }
     }
 
@@ -44,7 +57,7 @@ def health():
     DB_HOST = os.getenv('DB_HOST', 'localhost')
     DB_PORT = int(os.getenv('DB_PORT', 3306))
     DB_USER = os.getenv('DB_USER', 'root')
-    DB_PASSWORD = os.getenv('DB_PASSWORD', '1234')
+    DB_PASSWORD = os.getenv('DB_PASSWORD', '')
     DB_DATABASE = os.getenv('DB_DATABASE', 'listify')
     
     conn = connect_to_mysql(DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_DATABASE)
@@ -79,4 +92,4 @@ if __name__ == '__main__':
     print("Test: http://localhost:5000/test")
     print("Health: http://localhost:5000/health")
     
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5001, debug=True)
