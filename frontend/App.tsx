@@ -16,6 +16,7 @@ import CartSidebar from './components/CartSidebar';
 import { GenreDistribution, WeeklyActivity, AudioRadar } from './components/Charts';
 import { Login } from './components/Login';
 import { Register } from './components/Register';
+// test
 
 type AuthView = 'login' | 'register' | null;
 
