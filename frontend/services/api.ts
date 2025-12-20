@@ -1,28 +1,19 @@
-const API_BASE_URL = 'http://localhost:5001';
+import axios from 'axios';
 
-export const api = {
-  post: async (endpoint: string, data: any) => {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    return response.json();
+const api = axios.create({
+  baseURL: 'http://localhost:5001',
+  headers: {
+    'Content-Type': 'application/json',
   },
+});
 
-  get: async (endpoint: string, token?: string) => {
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    };
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      method: 'GET',
-      headers,
-    });
-    return response.json();
-  },
-};
+// 응답 인터셉터 (data 바로 쓰게)
+api.interceptors.response.use(
+  response => response,
+  error => {
+    console.error('API Error:', error);
+    return Promise.reject(error);
+  }
+);
+
+export default api;
