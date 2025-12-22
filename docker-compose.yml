@@ -1,28 +1,27 @@
-version: '3.8'
-
 services:
-  # MySQL 데이터베이스
-  db:
-    image: mysql:8.0
-    container_name: listify-db
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-rootpassword}
-      MYSQL_DATABASE: ${DB_DATABASE:-listify}
-      MYSQL_USER: ${DB_USER:-listify_user}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-rootpassword}
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-    networks:
-      - listify-network
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_PASSWORD:-rootpassword}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
+  # MySQL 데이터베이스 (로컬 MySQL 사용 - 주석 처리)
+  # Docker MySQL이 필요하면 아래 주석을 제거하고 로컬 MySQL을 중지하세요
+  # db:
+  #   image: mysql:8.0
+  #   container_name: listify-db
+  #   restart: unless-stopped
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-rootpassword}
+  #     MYSQL_DATABASE: ${DB_DATABASE:-listify}
+  #     MYSQL_USER: ${DB_USER:-listify_user}
+  #     MYSQL_PASSWORD: ${DB_PASSWORD:-rootpassword}
+  #   ports:
+  #     - "3307:3306"
+  #   volumes:
+  #     - mysql_data:/var/lib/mysql
+  #   networks:
+  #     - listify-network
+  #   healthcheck:
+  #     test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_PASSWORD:-rootpassword}"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #     start_period: 30s
 
   # Flask Backend API
   backend:
@@ -34,18 +33,21 @@ services:
     environment:
       - FLASK_APP=app.py
       - FLASK_ENV=${FLASK_ENV:-production}
-      - DB_HOST=db
-      - DB_PORT=3306
-      - DB_USER=${DB_USER:-listify_user}
-      - DB_PASSWORD=${DB_PASSWORD:-rootpassword}
+      - DB_HOST=host.docker.internal  # 로컬 MySQL 사용 (Docker 내부에서 호스트 접근)
+      - DB_PORT=${DB_PORT:-3306}
+      - DB_USER=${DB_USER:-root}
+      - DB_PASSWORD=${DB_PASSWORD:-0000}
       - DB_DATABASE=${DB_DATABASE:-listify}
-      - SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID}
-      - SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_SECRET}
+      - SPOTIFY_CLIENT_ID=${SPOTIPY_CLIENT_ID}  # .env의 SPOTIPY_CLIENT_ID 사용
+      - SPOTIFY_CLIENT_SECRET=${SPOTIPY_CLIENT_SECRET}  # .env의 SPOTIPY_CLIENT_SECRET 사용
     ports:
       - "5001:5001"
-    depends_on:
-      db:
-        condition: service_healthy
+    # Docker MySQL 사용 시 아래 주석 제거
+    # depends_on:
+    #   db:
+    #     condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"  # macOS/Windows에서 로컬 호스트 접근
     volumes:
       - ./backend:/app
     networks:
